@@ -4,6 +4,8 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -18,6 +20,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'role_id',
         'name',
         'email',
         'password',
@@ -44,5 +47,20 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function permissions(): HasMany
+    {
+        return $this->hasMany(Permission::class);
+    }
+
+    public function hasPermission(string $permission): bool
+    {
+        return $this->role->name === $permission;
+    }
+
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
     }
 }
